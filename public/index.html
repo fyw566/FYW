@@ -1065,7 +1065,11 @@ function applySharedData(d) {
 
 // ============================================================
 // 后端数据同步（API优先 → 静态data.json → data.js/内联兜底 → 本地缓存）
+// Gitee 仓库为公开仓库，前端每次打开额外从 Gitee 拉取每日更新的最新 data.js，
+// 这样 CloudStudio 纯静态托管也能实现"每日9点自动更新"（daily 自动化 git push 即生效）。
 // ============================================================
+const GITEE_RAW_DATA = 'https://gitee.com/flying-fish-dumplings/fish-ball-workstation/raw/main/public/data.js';
+
 async function syncFromBackend(manual) {
     const btn = document.getElementById('refreshBtn');
     if (manual && btn) btn.classList.add('spinning');
@@ -1106,6 +1110,33 @@ async function syncFromBackend(manual) {
     } finally {
         if (btn) setTimeout(() => btn.classList.remove('spinning'), manual ? 600 : 0);
     }
+
+    // ★ 后台从 Gitee 拉取每日更新的最新数据（静态托管下以此为准）
+    loadGiteeRaw(manual);
+}
+
+// 从 Gitee 公开仓库拉取最新 data.js（脚本注入方式，绕过跨域限制）
+function loadGiteeRaw(manual) {
+    const url = GITEE_RAW_DATA + '?_=' + Date.now();
+    const s = document.createElement('script');
+    s.src = url;
+    s.onload = function () {
+        const d = window.SHARED_DATA;
+        if (d && hasData(d)) {
+            applySharedData(d);
+            saveAllData();
+            renderAllPages();
+            showUpdatedTime();
+            if (manual && !window.__giteeLoadedOnce) {
+                showToast('已更新到最新数据');
+            }
+            window.__giteeLoadedOnce = true;
+        }
+    };
+    s.onerror = function () {
+        if (manual) showToast('Gitee 数据拉取失败，显示本地数据');
+    };
+    document.head.appendChild(s);
 }
 
 function showUpdatedTime() {
