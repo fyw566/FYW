@@ -1,0 +1,20 @@
+# Render Blueprint（一键部署）
+# 部署方式：Render 后台 New → Blueprint → 连接本仓库 → 自动按此文件建服务
+# 说明：本服务为「后端 API + 前端静态托管」一体，部署后即为手机端访问入口。
+
+services:
+  - type: web
+    name: feiyuwan-workbench
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/data
+    envVars:
+      - key: PORT
+        value: "3000"
+        sync: false
+      # API_TOKEN 与「每日自动化」推送时使用的 token 必须一致。
+      # 不填则服务端默认使用内置值 feiyuwan-secret-2026，自动化也用同值，可直接工作。
+      # 若想自定义，请在 Render 后台 Service → Environment 中新增 API_TOKEN 并同步改自动化。
+      - key: API_TOKEN
+        sync: false

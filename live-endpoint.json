@@ -1,0 +1,5 @@
+{
+  "apiBase": "REPLACE_WITH_DEPLOYED_URL",
+  "token": "feiyuwan-secret-2026",
+  "note": "部署到 Render/Railway 后，把 apiBase 改为该服务对外 URL（如 https://feiyuwan-workbench.onrender.com），自动化每日推送才会真正生效。若仍为占位符，自动化仅更新 CloudStudio 静态站作为兜底。"
+}
