@@ -1079,6 +1079,7 @@ function applySharedData(d) {
 // 加载失败时回退到本页内置数据（部署时快照），页面永远不会空白。
 // ============================================================
 const CDN_DATA_URLS = [
+    'https://gitee.com/flying-fish-dumplings/fish-ball-workstation/raw/main/public/data.js',
     'https://cdn.jsdelivr.net/gh/fyw566/FYW@main/public/data.js',
     'https://fastly.jsdelivr.net/gh/fyw566/FYW@main/public/data.js',
     'https://gcore.jsdelivr.net/gh/fyw566/FYW@main/public/data.js'
@@ -1101,7 +1102,7 @@ function loadFromCDN(manual, onAllFailed) {
             if (onAllFailed) onAllFailed();
             return;
         }
-        const url = CDN_DATA_URLS[i++] + '?_=' + Date.now();
+        const url = CDN_DATA_URLS[i++]; // 不追加缓存参数：Gitee raw 带 ? 会返回错误页
         const sc = document.createElement('script');
         sc.src = url;
         sc.onload = function () {
